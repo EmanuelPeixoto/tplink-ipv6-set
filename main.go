@@ -110,9 +110,14 @@ func main() {
 	page.MustElement(`input#pc-login-password`).MustInput(password)
 	page.MustElement(`span.text.button-text`).MustClick()
 
-	// Se outra sessão estiver ativa, aparece botão "Efetuar o login"
-	if btn, _ := page.Element(`button#confirm-yes`); btn != nil {
-		btn.MustClick()
+	// Poll síncrono por 3s: modal "outra sessão ativa"
+	for i := 0; i < 15; i++ {
+		time.Sleep(200 * time.Millisecond)
+		has, err := page.Eval(`() => !!document.querySelector('#confirm-yes')`)
+		if err == nil && has.Value.Bool() {
+			page.MustElement(`#confirm-yes`).MustClick()
+			break
+		}
 	}
 	page.MustWaitStable()
 
