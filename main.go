@@ -109,13 +109,12 @@ func main() {
 	// --- LOGIN ---
 	page.MustElement(`input#pc-login-password`).MustInput(password)
 	page.MustElement(`span.text.button-text`).MustClick()
-	page.MustWaitStable()
 
 	// Se outra sessão estiver ativa, aparece botão "Efetuar o login"
 	if btn, _ := page.Element(`button#confirm-yes`); btn != nil {
 		btn.MustClick()
-		page.MustWaitStable()
 	}
+	page.MustWaitStable()
 
 	// --- AVANÇADO ---
 	page.MustElement(`span.T_adv.text`).MustClick()
