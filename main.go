@@ -44,11 +44,7 @@ func prompt(msg, def string) string {
 	return text
 }
 
-const (
-	numRegras        = 3
-	textoSeguranca   = "Segurança"
-	textoFirewallIP6 = "Firewall IPv6"
-)
+const numRegras = 3
 
 func editarRegras(page *rod.Page, ip string, n int) {
 	for i := 0; i < n; i++ {
@@ -126,11 +122,11 @@ func main() {
 	page.MustWaitStable()
 
 	// --- SEGURANÇA ---
-	page.MustElementR("span", textoSeguranca).MustClick()
+	page.MustElement(`a[url="portFiltering.htm"]`).MustClick()
 	page.MustWaitStable()
 
 	// --- FIREWALL IPV6 ---
-	page.MustElementR("span", textoFirewallIP6).MustClick()
+	page.MustElement(`a[url="ipv6Firewall.htm"]`).MustClick()
 	page.MustWaitStable()
 
 	// --- EDITAR REGRAS ---
