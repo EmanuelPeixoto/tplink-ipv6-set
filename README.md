@@ -12,11 +12,14 @@ Automatiza login → Avançado → Segurança → Firewall IPv6 → editar regra
 ## Instalação
 
 ```bash
-git clone https://github.com/seu-user/tplink-ipv6-set
+git clone https://github.com/EmanuelPeixoto/tplink-ipv6-set
 cd tplink-ipv6-set
-echo "sua-senha" > senha-wifi.txt
 go build -o tplink-ipv6-set .
 ```
+
+> A senha do roteador **não** deve ficar dentro do repositório. Coloque-a em um
+> arquivo fora do repo (ex.: `~/.config/senha-wifi.txt` com `chmod 600`) e
+> informe o caminho via `-password-file` ou `TPLINK_PASSWORD_FILE`.
 
 No NixOS, rode dentro do `nix-shell`:
 
@@ -29,6 +32,12 @@ nix-shell -p chromium
 ```bash
 # Modo automático (passa o IP como argumento)
 ./tplink-ipv6-set "2001:db8::1"
+
+# Modo automático com caminho da senha
+./tplink-ipv6-set -password-file ~/.config/senha-wifi.txt "2001:db8::1"
+
+# Ou via variável de ambiente
+TPLINK_PASSWORD_FILE=~/.config/senha-wifi.txt ./tplink-ipv6-set "2001:db8::1"
 
 # Modo interativo (pergunta o IP)
 ./tplink-ipv6-set -i
@@ -44,12 +53,21 @@ nix-shell -p chromium
 | `-i` | Modo interativo: pergunta o IP durante a execução |
 | `-debug` | Abre o navegador visível |
 | `-slow` | Pausa de 1s entre cada ação |
+| `-password-file` | Caminho do arquivo com a senha (padrão: `$TPLINK_PASSWORD_FILE` ou `senha-wifi.txt`) |
 
 ## Configuração
 
 ### Senha
 
-Coloque a senha do roteador no arquivo `senha-wifi.txt` (uma linha).
+Coloque a senha do roteador em um arquivo local fora do repositório (uma linha)
+com permissões restritas:
+
+```bash
+install -m 600 /dev/null ~/.config/senha-wifi.txt
+echo "sua-senha" > ~/.config/senha-wifi.txt
+```
+
+Depois passe o caminho com `-password-file` ou defina `TPLINK_PASSWORD_FILE`.
 
 ### Número de regras
 

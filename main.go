@@ -64,6 +64,7 @@ func main() {
 	debug := flag.Bool("debug", false, "Abre navegador visível")
 	slow := flag.Bool("slow", false, "Executa devagar (1s entre ações)")
 	interactive := flag.Bool("i", false, "Modo interativo: pergunta cada valor")
+	passwordFile := flag.String("password-file", "", "Caminho do arquivo com a senha (padrão: $TPLINK_PASSWORD_FILE ou senha-wifi.txt)")
 	flag.Parse()
 
 	args := flag.Args()
@@ -71,15 +72,25 @@ func main() {
 	if *interactive {
 		fmt.Println("Modo interativo — vai perguntar o IP durante a execução.")
 	} else if len(args) < 1 {
-		fmt.Println("Uso: ./getip [-i] [-debug] <ip>")
-		fmt.Println("  -i        modo interativo (pergunta o IP)")
-		fmt.Println("  -debug    navegador visível")
+		fmt.Println("Uso: ./tplink-ipv6-set [-i] [-debug] [-slow] [-password-file CAMINHO] <ip>")
+		fmt.Println("  -i               modo interativo (pergunta o IP)")
+		fmt.Println("  -debug           navegador visível")
+		fmt.Println("  -password-file   arquivo com a senha do roteador")
 		os.Exit(1)
 	} else {
 		ip = args[0]
 	}
 
-	password, err := readPasswordFromFile("senha-wifi.txt")
+	// Resolve o arquivo de senha: flag > env > padrão local.
+	file := *passwordFile
+	if file == "" {
+		file = os.Getenv("TPLINK_PASSWORD_FILE")
+	}
+	if file == "" {
+		file = "senha-wifi.txt"
+	}
+
+	password, err := readPasswordFromFile(file)
 	if err != nil {
 		fmt.Println("Erro ao ler a senha:", err)
 		os.Exit(1)
