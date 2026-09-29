@@ -101,10 +101,14 @@ func main() {
 		fmt.Println("chromium não encontrado no PATH. Rode: nix-shell -p chromium")
 		os.Exit(1)
 	}
-	u := launcher.New().
+	l := launcher.New().
 		Bin(chromium).
-		Headless(!*debug && !*interactive).
-		MustLaunch()
+		Headless(!*debug && !*interactive)
+	if os.Geteuid() == 0 {
+		// Chromium se recusa a rodar como root sem --no-sandbox.
+		l = l.Set("no-sandbox")
+	}
+	u := l.MustLaunch()
 
 	browser := rod.New().
 		ControlURL(u).
